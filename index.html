@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Reimbursement Portal</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="login-container" id="loginContainer">
+        <div class="login-card">
+            <div class="login-header">
+                <h1><i class="fas fa-receipt"></i> Reimbursement Portal</h1>
+                <p>Sign in to your account</p>
+            </div>
+            
+            <form id="loginForm" class="login-form">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-sign-in-alt"></i> Sign In
+                </button>
+            </form>
+            
+            <div class="demo-accounts">
+                <h3>Demo Accounts</h3>
+                <div class="account-grid">
+                    <div class="account-category">
+                        <h4>Employees</h4>
+                        <div class="account-list">
+                            <button class="demo-btn" onclick="fillLogin('emp001', 'password123')">emp001</button>
+                            <button class="demo-btn" onclick="fillLogin('emp002', 'password123')">emp002</button>
+                            <button class="demo-btn" onclick="fillLogin('emp003', 'password123')">emp003</button>
+                            <button class="demo-btn" onclick="fillLogin('emp004', 'password123')">emp004</button>
+                        </div>
+                    </div>
+                    
+                    <div class="account-category">
+                        <h4>Managers</h4>
+                        <div class="account-list">
+                            <button class="demo-btn" onclick="fillLogin('mgr001', 'manager123')">mgr001</button>
+                            <button class="demo-btn" onclick="fillLogin('mgr002', 'manager123')">mgr002</button>
+                            <button class="demo-btn" onclick="fillLogin('mgr003', 'manager123')">mgr003</button>
+                            <button class="demo-btn" onclick="fillLogin('mgr004', 'manager123')">mgr004</button>
+                        </div>
+                    </div>
+                    
+                    <div class="account-category">
+                        <h4>Finance</h4>
+                        <div class="account-list">
+                            <button class="demo-btn" onclick="fillLogin('fin001', 'finance123')">fin001</button>
+                            <button class="demo-btn" onclick="fillLogin('fin002', 'finance123')">fin002</button>
+                            <button class="demo-btn" onclick="fillLogin('fin003', 'finance123')">fin003</button>
+                            <button class="demo-btn" onclick="fillLogin('fin004', 'finance123')">fin004</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Application Container -->
+    <div class="app-container" id="appContainer" style="display: none;">
+        <!-- Navigation -->
+        <nav class="navbar">
+            <div class="nav-brand">
+                <i class="fas fa-receipt"></i>
+                <span>Reimbursement Portal</span>
+            </div>
+            <div class="nav-user">
+                <span id="userInfo"></span>
+                <button class="btn btn-secondary" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+        </nav>
+
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <ul class="nav-menu" id="navMenu">
+                <!-- Navigation items will be populated by JavaScript -->
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Employee Dashboard -->
+            <div class="page" id="employeeDashboard">
+                <div class="page-header">
+                    <h2><i class="fas fa-tachometer-alt"></i> My Dashboard</h2>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-file-alt"></i></div>
+                        <div class="stat-info">
+                            <h3 id="totalClaims">0</h3>
+                            <p>Total Claims</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-clock"></i></div>
+                        <div class="stat-info">
+                            <h3 id="pendingClaims">0</h3>
+                            <p>Pending</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+                        <div class="stat-info">
+                            <h3 id="approvedClaims">0</h3>
+                            <p>Approved</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-money-bill-wave"></i></div>
+                        <div class="stat-info">
+                            <h3 id="totalAmount">₱0</h3>
+                            <p>Total Amount</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="claims-table-container">
+                    <h3>My Claims</h3>
+                    <table class="claims-table" id="employeeClaimsTable">
+                        <thead>
+                            <tr>
+                                <th>Claim ID</th>
+                                <th>Date</th>
+                                <th>Category</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="employeeClaimsBody">
+                            <!-- Claims will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- New Claim Form -->
+            <div class="page" id="newClaimPage">
+                <div class="page-header">
+                    <h2><i class="fas fa-plus-circle"></i> New Reimbursement Claim</h2>
+                </div>
+                
+                <form id="newClaimForm" class="claim-form">
+                    <div class="form-section">
+                        <h3>Employee Details</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="employeeName">Employee Name</label>
+                                <input type="text" id="employeeName" name="employeeName" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label for="employeeId">Employee ID</label>
+                                <input type="text" id="employeeId" name="employeeId" readonly>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="department">Department</label>
+                                <input type="text" id="department" name="department" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label for="costCenter">Cost Center</label>
+                                <select id="costCenter" name="costCenter" required>
+                                    <option value="">Select Cost Center</option>
+                                    <option value="CC001">CC001 - IT Department</option>
+                                    <option value="CC002">CC002 - HR Department</option>
+                                    <option value="CC003">CC003 - Finance Department</option>
+                                    <option value="CC004">CC004 - Operations</option>
+                                    <option value="CC005">CC005 - Marketing</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>Expense Details</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="expenseCategory">Expense Category</label>
+                                <select id="expenseCategory" name="expenseCategory" required>
+                                    <option value="">Select Category</option>
+                                    <option value="travel">Travel & Transportation</option>
+                                    <option value="meals">Meals & Entertainment</option>
+                                    <option value="office">Office Supplies</option>
+                                    <option value="communication">Communication</option>
+                                    <option value="training">Training & Development</option>
+                                    <option value="medical">Medical Expenses</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="expenseDate">Date of Expense</label>
+                                <input type="date" id="expenseDate" name="expenseDate" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="amount">Amount (PHP)</label>
+                                <div class="currency-input">
+                                    <span class="currency-symbol">₱</span>
+                                    <input type="number" id="amount" name="amount" step="0.01" min="0" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="paymentMethod">Payment Method</label>
+                                <select id="paymentMethod" name="paymentMethod" required>
+                                    <option value="">Select Payment Method</option>
+                                    <option value="bank_transfer">Bank Transfer</option>
+                                    <option value="check">Check</option>
+                                    <option value="cash">Cash</option>
+                                    <option value="credit_card">Credit Card Reimbursement</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="projectCode">Project Code (Optional)</label>
+                                <select id="projectCode" name="projectCode">
+                                    <option value="">Select Project</option>
+                                    <option value="PRJ001">PRJ001 - Website Redesign</option>
+                                    <option value="PRJ002">PRJ002 - Mobile App Development</option>
+                                    <option value="PRJ003">PRJ003 - System Integration</option>
+                                    <option value="PRJ004">PRJ004 - Training Program</option>
+                                    <option value="PRJ005">PRJ005 - Market Research</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="purpose">Purpose of Expense</label>
+                            <textarea id="purpose" name="purpose" rows="4" placeholder="Please describe the purpose and business justification for this expense..." required></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>Supporting Documents</h3>
+                        <div class="form-group">
+                            <label for="receipt">Receipt/Invoice</label>
+                            <input type="file" id="receipt" name="receipt" accept=".pdf,.jpg,.jpeg,.png" multiple>
+                            <small>Supported formats: PDF, JPG, PNG. Max 5MB per file.</small>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="showPage('employeeDashboard')">Cancel</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-paper-plane"></i> Submit Claim
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Manager Dashboard -->
+            <div class="page" id="managerDashboard">
+                <div class="page-header">
+                    <h2><i class="fas fa-tasks"></i> Approval Dashboard</h2>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-inbox"></i></div>
+                        <div class="stat-info">
+                            <h3 id="pendingApprovals">0</h3>
+                            <p>Pending Approvals</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-check"></i></div>
+                        <div class="stat-info">
+                            <h3 id="approvedToday">0</h3>
+                            <p>Approved Today</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-times"></i></div>
+                        <div class="stat-info">
+                            <h3 id="rejectedToday">0</h3>
+                            <p>Rejected Today</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-money-bill-wave"></i></div>
+                        <div class="stat-info">
+                            <h3 id="totalPendingAmount">₱0</h3>
+                            <p>Pending Amount</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="claims-table-container">
+                    <h3>Claims Awaiting Approval</h3>
+                    <table class="claims-table" id="managerClaimsTable">
+                        <thead>
+                            <tr>
+                                <th>Claim ID</th>
+                                <th>Employee</th>
+                                <th>Date</th>
+                                <th>Category</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="managerClaimsBody">
+                            <!-- Claims will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Finance Dashboard -->
+            <div class="page" id="financeDashboard">
+                <div class="page-header">
+                    <h2><i class="fas fa-calculator"></i> Finance Review</h2>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-clipboard-check"></i></div>
+                        <div class="stat-info">
+                            <h3 id="financeReviewPending">0</h3>
+                            <p>Pending Review</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-money-check-alt"></i></div>
+                        <div class="stat-info">
+                            <h3 id="readyForPayment">0</h3>
+                            <p>Ready for Payment</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-check-double"></i></div>
+                        <div class="stat-info">
+                            <h3 id="processedToday">0</h3>
+                            <p>Processed Today</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-coins"></i></div>
+                        <div class="stat-info">
+                            <h3 id="totalPaymentAmount">₱0</h3>
+                            <p>Payment Amount</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="claims-table-container">
+                    <h3>Claims for Finance Review</h3>
+                    <table class="claims-table" id="financeClaimsTable">
+                        <thead>
+                            <tr>
+                                <th>Claim ID</th>
+                                <th>Employee</th>
+                                <th>Manager</th>
+                                <th>Category</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="financeClaimsBody">
+                            <!-- Claims will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Audit Trail -->
+            <div class="page" id="auditTrail">
+                <div class="page-header">
+                    <h2><i class="fas fa-history"></i> Audit Trail</h2>
+                </div>
+                
+                <div class="audit-filters">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="auditDateFrom">Date From</label>
+                            <input type="date" id="auditDateFrom" name="auditDateFrom">
+                        </div>
+                        <div class="form-group">
+                            <label for="auditDateTo">Date To</label>
+                            <input type="date" id="auditDateTo" name="auditDateTo">
+                        </div>
+                        <div class="form-group">
+                            <label for="auditAction">Action</label>
+                            <select id="auditAction" name="auditAction">
+                                <option value="">All Actions</option>
+                                <option value="submitted">Submitted</option>
+                                <option value="approved">Approved</option>
+                                <option value="rejected">Rejected</option>
+                                <option value="paid">Paid</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <button type="button" class="btn btn-primary" onclick="filterAuditTrail()">
+                                <i class="fas fa-filter"></i> Filter
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="audit-table-container">
+                    <table class="audit-table" id="auditTable">
+                        <thead>
+                            <tr>
+                                <th>Timestamp</th>
+                                <th>Claim ID</th>
+                                <th>User</th>
+                                <th>Action</th>
+                                <th>Details</th>
+                                <th>IP Address</th>
+                            </tr>
+                        </thead>
+                        <tbody id="auditTableBody">
+                            <!-- Audit entries will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal for Claim Details -->
+    <div class="modal" id="claimModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Claim Details</h3>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Claim details will be populated by JavaScript -->
+            </div>
+            <div class="modal-footer" id="modalFooter">
+                <!-- Action buttons will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
